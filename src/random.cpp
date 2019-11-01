@@ -1,7 +1,7 @@
 #include "random.h"
 
 RandomNumbers::RandomNumbers(unsigned long int s) : seed(s) {
-	if (seed == 0) {
+	if (seed == 0){
 		std::random_device rd;
 		seed = rd();
 	} 
@@ -13,7 +13,7 @@ void RandomNumbers::uniform_double(std::vector<double>& vec, double lower, doubl
 	for (size_t i = 0; i < vec.size(); ++i){
 		vec[i] = uni_distrib(rng);
 		}
-		return;	
+	return;	
 }
 
 double RandomNumbers::uniform_double(double lower, double upper){
@@ -26,7 +26,7 @@ void RandomNumbers::poisson(std::vector<int>& vec, double mean){
 	for (size_t i = 0; i < vec.size(); ++i){
 		vec[i] = pois_distrib(rng);
 		}
-		return;	
+	return;	
 }
 
 int RandomNumbers::poisson(double mean){

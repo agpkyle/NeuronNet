@@ -142,19 +142,17 @@ std::pair<size_t, double> Network::degree(const size_t& n) const {
 }
 
 std::vector<std::pair<size_t, double> > Network::neighbors(const size_t& n) const {
-	
 	std::vector<std::pair<size_t,double> > tmp;
 	
 	std::map<std::pair<size_t, size_t>, double>::const_iterator it;
 	it = links.lower_bound({n, 0});	
 	for (auto I=it; I!=links.end() and I->first.first == n; I++){
-			tmp.push_back({I->first.second, I->second});
-		
+			tmp.push_back({I->first.second, I->second});		
 	}	
 	return tmp;
 }
 
-std::set<size_t> Network::step(const std::vector<double>& vec){	
+std::set<size_t> Network::step(const std::vector<double>& vec) {	
 	std::set<size_t> firingNeurons;
 	std::vector<bool> tableFiringNeurons(neurons.size());
 	
@@ -173,10 +171,9 @@ std::set<size_t> Network::step(const std::vector<double>& vec){
 				newInput += 0.4*vec[i];
 			} else {
 				newInput += vec[i];
-			}
+		}
 		std::vector<std::pair<size_t,double>> neighborsOfI(this->neighbors(i));
-		for(size_t j = 0; j < neighborsOfI.size(); ++j){
-			
+		for(size_t j = 0; j < neighborsOfI.size(); ++j){			
 			if(tableFiringNeurons[neighborsOfI[j].first] == true){
 				if(neurons[neighborsOfI[j].first].is_inhibitory()){
 					newInput += neighborsOfI[j].second;
