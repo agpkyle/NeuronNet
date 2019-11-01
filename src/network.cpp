@@ -128,3 +128,68 @@ void Network::print_traj(const int time, const std::map<std::string, size_t> &_n
             }
     (*_out) << std::endl;
 }
+
+std::pair<size_t, double> Network::degree(const size_t& n) const {
+	size_t n_link(0);
+	double sum(0.);
+	for (const auto& link : links){
+		if ( link.first.first == n){
+			++n_link;
+			sum += link.second;
+			} 
+		}
+	return std::make_pair(n_link, sum);
+}
+
+std::vector<std::pair<size_t, double> > Network::neighbors(const size_t& n) const {
+	
+	std::vector<std::pair<size_t,double> > tmp;
+	
+	std::map<std::pair<size_t, size_t>, double>::const_iterator it;
+	it = links.lower_bound({n, 0});	
+	for (auto I=it; I!=links.end() and I->first.first == n; I++){
+			tmp.push_back({I->first.second, I->second});
+		
+	}	
+	return tmp;
+}
+
+std::set<size_t> Network::step(const std::vector<double>& vec){	
+	std::set<size_t> firingNeurons;
+	std::vector<bool> tableFiringNeurons(neurons.size());
+	
+	for(size_t i = 0; i < size(); ++i){
+		if(neurons[i].firing()){
+			tableFiringNeurons.push_back(true);
+			neurons[i].reset();
+		} else {
+			tableFiringNeurons.push_back(false);
+		}
+	}
+	
+	for(size_t i = 0; i < size(); ++i){
+		double newInput(0.);
+		if(neurons[i].is_inhibitory()){
+				newInput += 0.4*vec[i];
+			} else {
+				newInput += vec[i];
+			}
+		std::vector<std::pair<size_t,double>> neighborsOfI(this->neighbors(i));
+		for(size_t j = 0; j < neighborsOfI.size(); ++j){
+			
+			if(tableFiringNeurons[neighborsOfI[j].first] == true){
+				if(neurons[neighborsOfI[j].first].is_inhibitory()){
+					newInput += neighborsOfI[j].second;
+					} else {
+					newInput += 0.5*neighborsOfI[j].second;
+				}						
+			} else {}
+		}
+		this->neurons[i].input(newInput);
+		neurons[i].step();
+		if(neurons[i].firing()){
+			firingNeurons.insert(i);
+		}
+	}						
+	return firingNeurons;
+}
